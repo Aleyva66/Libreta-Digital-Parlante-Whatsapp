@@ -1,0 +1,9 @@
+flask
+twilio
+faster-whisper
+requests
+openai
+gtts
+matplotlib
+gunicorn
+psycopg2-binary
