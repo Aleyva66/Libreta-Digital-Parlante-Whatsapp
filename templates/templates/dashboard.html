@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Libreta Digital Parlante</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .chart-container { width: 80%; margin: auto; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard de Ventas e Inventario</h1>
+
+    <h2>Progreso de meta diaria</h2>
+    <div class="chart-container">
+        <canvas id="progresoChart"></canvas>
+    </div>
+
+    <h2>Ventas del mes (diarias)</h2>
+    <div class="chart-container">
+        <canvas id="ventasMesChart"></canvas>
+    </div>
+
+    <h2>Inventario actual</h2>
+    <div class="chart-container">
+        <canvas id="inventarioChart"></canvas>
+    </div>
+
+    <script>
+        fetch('/api/progreso')
+            .then(res => res.json())
+            .then(data => {
+                const ctx = document.getElementById('progresoChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Actual', 'Meta'],
+                        datasets: [{
+                            data: [data.actual, data.meta],
+                            backgroundColor: ['green', 'lightgray']
+                        }]
+                    },
+                    options: { scales: { y: { beginAtZero: true } } }
+                });
+            });
+
+        fetch('/api/ventas_mes')
+            .then(res => res.json())
+            .then(data => {
+                const fechas = data.ventas.map(v => v.fecha);
+                const totales = data.ventas.map(v => v.total);
+                const ctx = document.getElementById('ventasMesChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: fechas,
+                        datasets: [{
+                            label: 'Ventas diarias',
+                            data: totales,
+                            borderColor: 'blue',
+                            fill: false
+                        }]
+                    }
+                });
+            });
+
+        fetch('/api/inventario')
+            .then(res => res.json())
+            .then(data => {
+                const nombres = data.productos.map(p => p.nombre);
+                const stocks = data.productos.map(p => p.stock);
+                const ctx = document.getElementById('inventarioChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: nombres,
+                        datasets: [{
+                            label: 'Stock',
+                            data: stocks,
+                            backgroundColor: 'orange'
+                        }]
+                    }
+                });
+            });
+    </script>
+</body>
+</html>
