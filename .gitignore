@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+audio_responses/
+static/charts/
+.env
